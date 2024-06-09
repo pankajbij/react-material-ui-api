@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Container } from '@mui/material';
+import Header from './components/Header';
+import PostList from './components/PostList';
+import SearchBar from './components/SearchBar';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+const App = () => {
+  const [posts, setPosts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    axios.get('https://jsonplaceholder.typicode.com/posts')
+      .then(response => setPosts(response.data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+
+  const filteredPosts = posts.filter(post =>
+    post.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-}
+
+  return (
+    <Container>
+      <Header />
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <PostList posts={filteredPosts} />
+    </Container>
+  );
+};
 
 export default App;
